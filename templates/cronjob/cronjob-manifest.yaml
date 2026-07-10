@@ -1,0 +1,46 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: platform-cronjob-template
+  namespace: default
+spec:
+  schedule: "*/15 * * * *" # Every 15 minutes
+  concurrencyPolicy: Forbid # Prevent concurrent executions if previous run is slow
+  successfulJobsHistoryLimit: 3
+  failedJobsHistoryLimit: 1
+  jobTemplate:
+    spec:
+      backoffLimit: 2 # Limit retries to reduce load during downstream outages
+      template:
+        spec:
+          restartPolicy: OnFailure
+          priorityClassName: platform-medium
+          securityContext:
+            runAsNonRoot: true
+            runAsUser: 10001
+            fsGroup: 10001
+          containers:
+            - name: cron-runner
+              image: alpine:3.18
+              securityContext:
+                allowPrivilegeEscalation: false
+                capabilities:
+                  drop:
+                    - ALL
+                readOnlyRootFilesystem: true
+                runAsNonRoot: true
+                runAsUser: 10001
+              command:
+                - /bin/sh
+                - -c
+                - |
+                  echo "Starting scheduled batch routine..."
+                  # Code logic here
+                  echo "Scheduled batch routine completed."
+              resources:
+                limits:
+                  cpu: 200m
+                  memory: 256Mi
+                requests:
+                  cpu: 50m
+                  memory: 64Mi

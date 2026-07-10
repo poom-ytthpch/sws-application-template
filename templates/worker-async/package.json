@@ -1,0 +1,17 @@
+{
+  "name": "worker-async-golden-template",
+  "version": "1.0.0",
+  "description": "Enterprise async queue worker golden template with BullMQ integration",
+  "main": "dist/main.js",
+  "scripts": {
+    "build": "tsc",
+    "start": "node dist/main.js"
+  },
+  "dependencies": {
+    "bullmq": "^4.0.0",
+    "ioredis": "^5.0.0"
+  },
+  "devDependencies": {
+    "typescript": "^5.0.0"
+  }
+}

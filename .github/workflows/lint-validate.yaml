@@ -1,0 +1,31 @@
+name: Platform Application Template Lint & Validate
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v3
+
+      - name: Setup Yamllint
+        run: |
+          sudo apt-get update && sudo apt-get install -y yamllint
+
+      - name: Run Yamllint
+        run: |
+          yamllint -c .yamllint.yaml .
+
+      - name: Set up Helm
+        uses: azure/setup-helm@v3
+        with:
+          version: 'v3.12.0'
+
+      - name: Verify Helm templates
+        run: |
+          helm template test-app charts/microservice/
